@@ -6,6 +6,7 @@ import Chat from './comp/Chat';
 import Profile from './comp/Profile';
 import SideNav from './comp/SideNav';
 import ChatContextProvider from './ContextProvider';
+import ProtectedRoute from './ProtectedRoute';
 import './index.css';
 
 const App = () => {
@@ -17,8 +18,10 @@ const App = () => {
 					<Routes>
 						<Route path='/' element={<Register />} />
 						<Route path='/login' element={<Login />} />
-						<Route path='/chat' element={<Chat />} />
-						<Route path='/profile' element={<Profile />} />
+						<Route element={<ProtectedRoute />}>
+							<Route path='/chat' element={<Chat />} />
+							<Route path='/profile' element={<Profile />} />
+						</Route>
 					</Routes>
 				</ChatContextProvider>
 			</Router>

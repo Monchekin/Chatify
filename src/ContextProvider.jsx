@@ -8,6 +8,10 @@ const ChatContextProvider = (props) => {
 	const [csrfToken, setCsrfToken] = useState('');
 	const [avatarUrl, setAvatarUrl] = useState('');
 
+	const [message, setMessage] = useState(null);
+
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+
 	//Används i Register
 	useEffect(() => {
 		fetch('https://chatify-api.up.railway.app/csrf', {
@@ -19,7 +23,7 @@ const ChatContextProvider = (props) => {
 	}, []);
 
 	//Används i Register
-	const register = (username, password, email) => {
+	const register = (username, password, email, setMessage) => {
 		fetch('https://chatify-api.up.railway.app/auth/register', {
 			method: 'POST',
 			headers: {
@@ -34,11 +38,30 @@ const ChatContextProvider = (props) => {
 			})
 		})
 			.then((res) => res.json())
-			.then((data) => console.log(data))
+			.then((data) => {
+				console.log(data);
+				const message = data.error
+					? { type: 'error', text: data.error }
+					: {
+							type: 'success',
+							text: 'Registration successful! Redirecting to login...'
+					  };
+
+				setMessage(message);
+
+				if (!data.error) {
+					setTimeout(() => {
+						window.location.href = '/login?success=Registration successful!';
+					}, 1000);
+				}
+			})
 			.catch((error) => {
 				console.error('Fetch error:', error);
+				setMessage({
+					type: 'error',
+					text: 'An unexpected error occurred. Please try again.'
+				});
 			});
-		location.href = '/login';
 	};
 
 	// Används i Register
@@ -65,7 +88,7 @@ const ChatContextProvider = (props) => {
 			.then((data) => {
 				console.log('data is', data);
 				sessionStorage.setItem('jwt_token', data.token);
-				location.href = '/chat';
+				window.location.href = '/chat';
 			})
 			.catch((error) => {
 				console.error('Fetch error:', error);
@@ -76,16 +99,30 @@ const ChatContextProvider = (props) => {
 	// 	setChat([...chat, { id: 1, text: 'you suck!' }]);
 	// }, [chat]);import { createContext, useState, useEffect } from 'react';
 
+	const signIn = () => {
+		setIsAuthenticated(true);
+		setTimeout(callback, 300);
+	};
+
+	const signOut = () => {
+		setIsAuthenticated(false);
+		setTimeout(callback, 300);
+	};
+
 	return (
 		<ChatContext.Provider
 			value={{
 				csrfToken,
 				register,
+				message,
 				login,
 				avatarUrl,
 				handlePreview,
+				isAuthenticated,
 				chat,
-				setChat
+				setChat,
+				signIn,
+				signOut
 			}}>
 			{props.children}
 		</ChatContext.Provider>

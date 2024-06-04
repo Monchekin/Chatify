@@ -6,34 +6,39 @@ const Register = () => {
 	const [password, setPassword] = useState('');
 	const [email, setEmail] = useState('');
 
-	const { register, handlePreview, avatarUrl } = useContext(ChatContext);
+	const { register, handlePreview, avatarUrl, message } =
+		useContext(ChatContext);
 
 	return (
 		<div>
 			<h1>Register</h1>
-
-			<input
-				type='text'
-				placeholder='Username'
-				value={username}
-				onChange={(e) => setUsername(e.target.value)}
-			/>
-			<input
-				type='password'
-				placeholder='Password'
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
-			/>
-			<input
-				type='email'
-				placeholder='Email'
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
-			/>
-
+			{message && (
+				<div
+					className={
+						message.type === 'error' ? 'text-red-500' : 'text-green-500'
+					}>
+					{message.text}
+				</div>
+			)}
+			<br /> <br />
+			<label className='input input-bordered flex items-center gap-2'>
+				Username:
+				<input type='text' className='grow' placeholder='Username' />
+			</label>
+			<br />
+			<label className='input input-bordered flex items-center gap-2'>
+				Password:
+				<input type='password' className='grow' placeholder='Password' />
+			</label>
+			<br />
+			<label className='input input-bordered flex items-center gap-2'>
+				Email:
+				<input type='text' className='grow' placeholder='exempel@exempel.com' />
+			</label>
 			<div className='avatar-container'>
-				<h3>Välj din Avatar</h3>
-				<button type='button' onClick={handlePreview}>
+				<button
+					className='btn btn-xs sm:btn-sm md:btn-md lg:btn-lg'
+					onClick={handlePreview}>
 					Välj din profilbild
 				</button>
 
@@ -43,9 +48,15 @@ const Register = () => {
 					</div>
 				)}
 			</div>
-
-			<button onClick={() => register(username, password, email)}>
+			<button
+				className='btn btn-xs sm:btn-sm md:btn-md lg:btn-lg'
+				onClick={() => register(username, password, email)}>
 				Register
+			</button>
+			<button
+				className='btn btn-xs sm:btn-sm md:btn-md lg:btn-lg'
+				onClick={() => (location.href = '/login')}>
+				Login
 			</button>
 		</div>
 	);
