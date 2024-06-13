@@ -3,9 +3,13 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { ChatContext } from './ContextProvider';
 
 const ProtectedRoute = () => {
-	const { isAuthenticated } = useContext(ChatContext);
+	const { isAuthenticated, isLoggedIn } = useContext(ChatContext);
 
-	return <div>{isAuthenticated ? <Outlet /> : <Navigate to='/login' />}</div>;
+	if (!isLoggedIn) {
+		return <Navigate to='/login' />;
+	}
+
+	return <div>{isLoggedIn ? <Outlet /> : <Navigate to='/login' />}</div>;
 };
 
 export default ProtectedRoute;

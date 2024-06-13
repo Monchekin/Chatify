@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Register from './comp/Register';
 import Login from './comp/Login';
 import Chat from './comp/Chat';
 import Profile from './comp/Profile';
 import SideNav from './comp/SideNav';
-import ChatContextProvider from './ContextProvider';
+import ChatContextProvider, { ChatContext } from './ContextProvider';
 import ProtectedRoute from './ProtectedRoute';
+import './Background.css';
 import './index.css';
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
 		<div>
 			<Router>
 				<ChatContextProvider>
+					<Background />
 					<SideNav />
 					<Routes>
 						<Route path='/' element={<Register />} />
@@ -26,6 +28,16 @@ const App = () => {
 				</ChatContextProvider>
 			</Router>
 		</div>
+	);
+};
+
+const Background = () => {
+	const { isLoggedIn } = useContext(ChatContext);
+	return (
+		<div
+			className={`background ${
+				isLoggedIn ? 'background-fargad' : 'background-svartvit'
+			}`}></div>
 	);
 };
 

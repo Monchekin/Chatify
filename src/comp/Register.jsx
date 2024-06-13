@@ -10,7 +10,9 @@ const Register = () => {
 		useContext(ChatContext);
 
 	return (
-		<div>
+		<div
+			className='p-8 flex flex-col space-y-1 shadow-xl content-center border-4 w-1/3  bg-contain  bg-image'
+			style={{ backgroundImage: "url('Sun_Flower_Background.png')" }}>
 			<h1>Register</h1>
 			{message && (
 				<div
@@ -20,41 +22,65 @@ const Register = () => {
 					{message.text}
 				</div>
 			)}
-			<br /> <br />
-			<label className='input input-bordered flex items-center gap-2'>
+
+			<label className='input input-bordered flex items-center gap-2 '>
 				Username:
-				<input type='text' className='grow' placeholder='Username' />
+				<input
+					type='text'
+					className='grow'
+					placeholder='Username'
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
+				/>
 			</label>
-			<br />
-			<label className='input input-bordered flex items-center gap-2'>
+
+			<label className='input input-bordered flex items-center gap-2 '>
 				Password:
-				<input type='password' className='grow' placeholder='Password' />
+				<input
+					type='password'
+					className='grow'
+					placeholder='Password'
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+				/>
 			</label>
-			<br />
-			<label className='input input-bordered flex items-center gap-2'>
+
+			<label className='input input-bordered flex items-center gap-2 '>
 				Email:
-				<input type='text' className='grow' placeholder='exempel@exempel.com' />
+				<input
+					type='text'
+					className='grow'
+					placeholder='exempel@exempel.com'
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+				/>
 			</label>
-			<div className='avatar-container'>
+
+			<div className='avatar-container  '>
 				<button
-					className='btn btn-xs sm:btn-sm md:btn-md lg:btn-lg'
+					className=' btn btn-xs sm:btn-sm md:btn-md   '
 					onClick={handlePreview}>
 					Välj din profilbild
 				</button>
 
-				{avatarUrl && (
-					<div className='avatar-preview'>
-						<img src={avatarUrl} alt='Avatar Preview' />
-					</div>
-				)}
+				<div className='border-2 border-solid ms-7 border-black w-20 h-20 '>
+					{!avatarUrl}
+					{avatarUrl && (
+						<img
+							src={avatarUrl}
+							alt='Avatar Preview'
+							className='w-full h-full object-cover '
+						/>
+					)}
+				</div>
 			</div>
 			<button
-				className='btn btn-xs sm:btn-sm md:btn-md lg:btn-lg'
-				onClick={() => register(username, password, email)}>
+				className='btn btn-xs sm:btn-sm md:btn-md'
+				onClick={() => register(username, password, email, message)}>
 				Register
 			</button>
 			<button
-				className='btn btn-xs sm:btn-sm md:btn-md lg:btn-lg'
+				className='btn btn-xs sm:btn-sm md:btn-md '
 				onClick={() => (location.href = '/login')}>
 				Login
 			</button>
