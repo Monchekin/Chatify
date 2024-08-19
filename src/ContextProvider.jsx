@@ -1,30 +1,69 @@
 import { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // Skapar en kontext med createContext-funktionen
 export const ChatContext = createContext();
 
 const ChatContextProvider = (props) => {
-	const [chat, setChat] = useState([]);
+	// Tillstånd för att lagra olika data som används i chatten och användarhantering
 	const [avatarUrl, setAvatarUrl] = useState('');
 	const [csrfToken, setCsrfToken] = useState('');
-	const [message, setMessage] = useState(null);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+	const [message, setMessage] = useState(null);
+	const [chatMsgHistory, setChatMsgHistory] = useState([]);
+	const [userInfo, setUserInfo] = useState(null);
+	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
 
-	//Används i Register
+	// Hämtar CSRF-token och användarinformation från sessionStorage när komponenten laddas
 	useEffect(() => {
 		fetch('https://chatify-api.up.railway.app/csrf', {
 			method: 'PATCH'
 		})
 			.then((res) => res.json())
-			.then((data) => setCsrfToken(data.csrfToken))
-			.catch((error) => console.log('Could not get CSRF token', error));
+			.then((data) => {
+				setCsrfToken(data.csrfToken);
+			})
+			.catch((error) => {
+				console.log('Could not get CSRF token', error);
+			});
+
+		// Kollar om JWT-token finns och hämtar användarinformation om den gör det
+		const token = sessionStorage.getItem('jwt_token');
+		if (token) {
+			const decodedJwt = JSON.parse(atob(token.split('.')[1]));
+			setUserInfo(decodedJwt);
+			setIsLoggedIn(true);
+		}
 	}, []);
 
-	//Används i Register
+	// Funktion för att registrera en ny användare
 	const register = (username, password, email) => {
+		let errorMessage = '';
+
+		// Validerar att alla fält är ifyllda
+		if (!username) {
+			errorMessage = 'Username is required.';
+		} else if (!password) {
+			errorMessage = 'Password is required.';
+		} else if (!email) {
+			errorMessage = 'Email is required.';
+		}
+
+		// Om något fält är tomt, visas ett felmeddelande
+		if (!username && !password && !email) {
+			setSearchParams({
+				error: 'All fields are required. Please fill in all fields.'
+			});
+			return;
+		}
+
+		if (errorMessage) {
+			setSearchParams({ error: errorMessage });
+			return;
+		}
+
+		// Skickar en registreringsförfrågan till servern
 		fetch('https://chatify-api.up.railway.app/auth/register', {
 			method: 'POST',
 			headers: {
@@ -40,57 +79,34 @@ const ChatContextProvider = (props) => {
 		})
 			.then((res) => res.json())
 			.then((data) => {
-				console.log(data);
-				const message = data.error
-					? { type: 'error', text: data.error }
-					: {
-							type: 'success',
-							text: 'Registration successful! Redirecting to login...'
-					  };
-
-				setMessage(message);
-
+				// Om registreringen lyckas, navigerar till inloggningssidan
 				if (!data.error) {
 					setTimeout(() => {
 						navigate('/login?success=Registration successful!');
-					}, 1000);
+					}, 3000);
+				} else {
+					// Om registreringen misslyckas, visas ett felmeddelande
+					setSearchParams({
+						error: data.error || 'Registration failed. Please try again.'
+					});
 				}
 			})
 			.catch((error) => {
 				console.error('Fetch error:', error);
-				setMessage({
-					type: 'error',
-					text: 'An unexpected error occurred. Please try again.'
+				setSearchParams({
+					error: 'An unexpected error occurred. Please try again.'
 				});
 			});
 	};
 
-	// Används i Register
+	// Funktion för att generera och förhandsgranska en avatar-URL
 	const handlePreview = () => {
 		setAvatarUrl(
 			`https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
 		);
 	};
 
-	//Kollar om jwt-token setts i sessionStorage
-	useEffect(() => {
-		const token = sessionStorage.getItem('jwt_token');
-		if (token) {
-			setIsLoggedIn(true);
-		}
-	}, []);
-
-	//ser till så att man kan uppdatera sidan och komma till samma sida
-	// useEffect(() => {
-	// 	const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-
-	// 	if (isLoggedIn === 'true') {
-	// 		const currentPage = sessionStorage.getItem('currentPage');
-	// 		navigate(currentPage);
-	// 	}
-	// }, []);
-
-	//Används i Login
+	// Funktion för att logga in en användare ----------------------------------------------
 	const login = (username, password) => {
 		fetch('https://chatify-api.up.railway.app/auth/token', {
 			method: 'POST',
@@ -103,34 +119,99 @@ const ChatContextProvider = (props) => {
 				csrfToken: csrfToken
 			})
 		})
-			.then((res) => res.json())
+			.then((res) => {
+				console.log('Response received:', res);
+				return res.json();
+			})
 			.then((data) => {
-				console.log('data is', data);
-				if (data.token) {
+				// Om inloggningen lyckas, sparas JWT-token och navigerar till chatten
+				if (data && data.token) {
 					sessionStorage.setItem('jwt_token', data.token);
 
 					setIsLoggedIn(true);
+					getChatHistory();
 					navigate('/chat');
+					console.log(userInfo);
 				} else {
-					setMessage({
-						type: 'error',
-						text: 'Your Username or Password is wrong. Please try again.'
-					});
+					// Om inloggningen misslyckas, visas ett felmeddelande
+					setSearchParams({ error: 'Invalid username or password' });
 				}
 			})
 			.catch((error) => {
 				console.error('Fetch error:', error);
-				setMessage({
-					type: 'error',
-					text: 'An unexpected error occurred. Please try again.'
+				setSearchParams({
+					error: 'An unexpected error occurred. Please try again.'
 				});
 			});
 	};
 
-	// useEffect(() => {
-	// 	setChat([...chat, { id: 1, text: 'you suck!' }]);
-	// }, [chat]);import { createContext, useState, useEffect } from 'react';
+	// Funktion för att hämta chatthistorik ----------------------------------------------
+	const getChatHistory = () => {
+		fetch('https://chatify-api.up.railway.app/messages', {
+			headers: {
+				Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token')
+			}
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				setChatMsgHistory(data);
+			})
+			.catch((error) => console.log(error));
+	};
 
+	// Funktion för att skicka ett meddelande
+	const sendMessage = (text) => {
+		fetch('https://chatify-api.up.railway.app/messages', {
+			method: 'POST',
+			headers: {
+				Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token'),
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				text: text,
+				conversationId: null
+			})
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				setMessage(data.latestMessage);
+				console.log('Message sent', data.latestMessage);
+			})
+			.catch((error) => console.log('Could not send message', error));
+	};
+
+	// Funktion för att ta bort ett meddelande
+	const removeMessage = (msgId) => {
+		fetch('https://chatify-api.up.railway.app/messages/' + msgId, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ` + sessionStorage.getItem('jwt_token')
+			}
+		});
+	};
+
+	// Funktion för att uppdatera användarprofilen ----------------------------------------------
+	const updateProfile = () => {
+		fetch('https://chatify-api.up.railway.app/user', {
+			method: 'PUT',
+			headers: {
+				Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token'),
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				userId: _userId, // här behövs korrekta värden
+				updatedData: {
+					username: _username, // _username är bara fejk
+					email: _email, // osv..
+					avatar: _avatar
+				}
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => console.log('user updated'));
+	};
+
+	// Funktion för att logga ut användaren
 	const logout = () => {
 		sessionStorage.removeItem('jwt_token');
 		setIsLoggedIn(false);
@@ -138,18 +219,24 @@ const ChatContextProvider = (props) => {
 	};
 
 	return (
+		// Tillhandahåller alla funktioner och data för andra komponenter via ChatContext
 		<ChatContext.Provider
 			value={{
 				csrfToken,
 				register,
-				message,
+				infoMessage: searchParams.get('error'),
 				login,
 				logout,
 				avatarUrl,
 				handlePreview,
 				isLoggedIn,
-				chat,
-				setChat
+				getChatHistory,
+				chatMsgHistory,
+				sendMessage,
+				message,
+				updateProfile,
+				userInfo,
+				removeMessage
 			}}>
 			{props.children}
 		</ChatContext.Provider>
