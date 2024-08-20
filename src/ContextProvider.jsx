@@ -8,10 +8,14 @@ const ChatContextProvider = (props) => {
 	// Tillstånd för att lagra olika data som används i chatten och användarhantering
 	const [avatarUrl, setAvatarUrl] = useState('');
 	const [csrfToken, setCsrfToken] = useState('');
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useState(
+		sessionStorage.getItem('is_logged_in') === 'true' || false
+	);
 	const [message, setMessage] = useState(null);
 	const [chatMsgHistory, setChatMsgHistory] = useState([]);
-	const [userInfo, setUserInfo] = useState(null);
+	const [userInfo, setUserInfo] = useState(
+		JSON.parse(sessionStorage.getItem('jwt_decoded')) || null
+	);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
 
@@ -27,14 +31,6 @@ const ChatContextProvider = (props) => {
 			.catch((error) => {
 				console.log('Could not get CSRF token', error);
 			});
-
-		// Kollar om JWT-token finns och hämtar användarinformation om den gör det
-		const token = sessionStorage.getItem('jwt_token');
-		if (token) {
-			const decodedJwt = JSON.parse(atob(token.split('.')[1]));
-			setUserInfo(decodedJwt);
-			setIsLoggedIn(true);
-		}
 	}, []);
 
 	// Funktion för att registrera en ny användare
@@ -127,11 +123,13 @@ const ChatContextProvider = (props) => {
 				// Om inloggningen lyckas, sparas JWT-token och navigerar till chatten
 				if (data && data.token) {
 					sessionStorage.setItem('jwt_token', data.token);
-
+					const decodedJwt = JSON.parse(atob(data.token.split('.')[1]));
+					setUserInfo(decodedJwt);
+					sessionStorage.setItem('jwt_decoded', JSON.stringify(decodedJwt));
+					sessionStorage.setItem('is_logged_in', true);
 					setIsLoggedIn(true);
 					getChatHistory();
 					navigate('/chat');
-					console.log(userInfo);
 				} else {
 					// Om inloggningen misslyckas, visas ett felmeddelande
 					setSearchParams({ error: 'Invalid username or password' });
@@ -187,34 +185,70 @@ const ChatContextProvider = (props) => {
 			headers: {
 				Authorization: `Bearer ` + sessionStorage.getItem('jwt_token')
 			}
-		});
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log('Message deleted', data);
+			})
+			.catch((error) => console.log('Could not delete message', error));
 	};
 
 	// Funktion för att uppdatera användarprofilen ----------------------------------------------
-	const updateProfile = () => {
-		fetch('https://chatify-api.up.railway.app/user', {
-			method: 'PUT',
+	const updateProfile = (userId, userInfo) => {
+		// Hämta aktuell användardata
+		fetch(`https://chatify-api.up.railway.app/users/${userId}`, {
+			method: 'GET',
 			headers: {
 				Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token'),
 				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				userId: _userId, // här behövs korrekta värden
-				updatedData: {
-					username: _username, // _username är bara fejk
-					email: _email, // osv..
-					avatar: _avatar
-				}
-			})
+			}
 		})
-			.then((res) => res.json())
-			.then((data) => console.log('user updated'));
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log('User data fetched:', data);
+
+				// Uppdatera användarprofilen
+				return fetch('https://chatify-api.up.railway.app/user/', {
+					method: 'PUT',
+					headers: {
+						Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token'),
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						userId: userId,
+						updatedData: {
+							username: userInfo.username,
+							email: userInfo.email,
+							avatar: userInfo.avatar
+						}
+					})
+				});
+			})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Failed to update user profile');
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log('User updated:', data);
+			})
+			.catch((error) => {
+				console.log('Error:', error);
+			});
 	};
 
 	// Funktion för att logga ut användaren
 	const logout = () => {
 		sessionStorage.removeItem('jwt_token');
+		sessionStorage.removeItem('is_logged_in');
 		setIsLoggedIn(false);
+		setUserInfo(null);
 		navigate('/login');
 	};
 
