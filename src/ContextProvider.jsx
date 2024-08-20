@@ -123,7 +123,9 @@ const ChatContextProvider = (props) => {
 				// Om inloggningen lyckas, sparas JWT-token och navigerar till chatten
 				if (data && data.token) {
 					sessionStorage.setItem('jwt_token', data.token);
-					const decodedJwt = JSON.parse(atob(data.token.split('.')[1]));
+					const decodedJwt = JSON.parse(
+						atob(data.token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
+					);
 					setUserInfo(decodedJwt);
 					sessionStorage.setItem('jwt_decoded', JSON.stringify(decodedJwt));
 					sessionStorage.setItem('is_logged_in', true);
@@ -194,41 +196,28 @@ const ChatContextProvider = (props) => {
 	};
 
 	// Funktion för att uppdatera användarprofilen ----------------------------------------------
-	const updateProfile = (userId, userInfo) => {
-		// Hämta aktuell användardata
-		fetch(`https://chatify-api.up.railway.app/users/${userId}`, {
-			method: 'GET',
+	const updateProfile = (updatedData) => {
+		const decoded = sessionStorage.getItem('jwt_decoded');
+		let decodedUser = null;
+
+		if (!decoded) {
+			console.error('No user data available');
+			return;
+		} else {
+			decodedUser = JSON.parse(decoded);
+		}
+
+		fetch(`https://chatify-api.up.railway.app/user`, {
+			method: 'PUT',
 			headers: {
 				Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token'),
 				'Content-Type': 'application/json'
-			}
+			},
+			body: JSON.stringify({
+				userId: decodedUser.id,
+				updatedData: updatedData
+			})
 		})
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error('Network response was not ok');
-				}
-				return response.json();
-			})
-			.then((data) => {
-				console.log('User data fetched:', data);
-
-				// Uppdatera användarprofilen
-				return fetch('https://chatify-api.up.railway.app/user/', {
-					method: 'PUT',
-					headers: {
-						Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token'),
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						userId: userId,
-						updatedData: {
-							username: userInfo.username,
-							email: userInfo.email,
-							avatar: userInfo.avatar
-						}
-					})
-				});
-			})
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error('Failed to update user profile');
@@ -236,10 +225,12 @@ const ChatContextProvider = (props) => {
 				return response.json();
 			})
 			.then((data) => {
+				const updatedUser = { ...decodedUser, ...updatedData };
+				sessionStorage.setItem('jwt_decoded', JSON.stringify(updatedUser));
 				console.log('User updated:', data);
 			})
 			.catch((error) => {
-				console.log('Error:', error);
+				console.error('Error:', error);
 			});
 	};
 

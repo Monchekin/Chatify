@@ -2,11 +2,10 @@ import React, { useContext, useState } from 'react';
 import { ChatContext } from '../ContextProvider';
 
 const Profile = () => {
-	const { updateProfile, userInfo } = useContext(ChatContext);
-
-	const [newUsername, setNewUsername] = useState('');
-	const [newEmail, setNewEmail] = useState('');
-	const [newAvatar, setNewAvatar] = useState('');
+	const { updateProfile, userInfo, handlePreview, avatarUrl } =
+		useContext(ChatContext);
+	const [newUsername, setNewUsername] = useState(userInfo.user || '');
+	const [newEmail, setNewEmail] = useState(userInfo.email || '');
 
 	const handleUsernameChange = () => {
 		updateProfile({ username: newUsername });
@@ -17,7 +16,7 @@ const Profile = () => {
 	};
 
 	const handleAvatarChange = () => {
-		updateProfile({ avatar: newAvatar });
+		updateProfile({ avatar: avatarUrl });
 	};
 
 	return (
@@ -26,24 +25,38 @@ const Profile = () => {
 				{userInfo && (
 					<>
 						<h1 className='text-lg font-bold'>
-							Hej {userInfo.username}, det här är din profilsida
+							{userInfo.user}, det här är din profilsida.
 						</h1>
-
-						<img
-							src={userInfo.avatar || 'https://i.pravatar.cc/150?img=10'}
-							alt='User Avatar'
-							className='w-24 h-24 rounded-full object-cover mt-4 mb-4'
-						/>
-
+						<p className='mt-0'>
+							Här kan du byta profilbild, användarnamn och email.
+						</p>
+						{!avatarUrl && (
+							<img
+								src={userInfo.avatar}
+								alt='User Avatar'
+								className='w-30 h-30 rounded-full object-cover mt-4 mb-4'
+							/>
+						)}
+						{avatarUrl && (
+							<img
+								src={avatarUrl}
+								alt='User Avatar'
+								className='w-30 h-30 rounded-full object-cover mt-4 mb-4'
+							/>
+						)}
 						<button
-							className='btn btn-xs sm:btn-sm md:btn-md'
-							onClick={(handleAvatarChange, setNewAvatar)}>
+							className='btn btn-xs sm:btn-sm mt-3'
+							onClick={handlePreview}>
+							Välj ny Profilbild
+						</button>
+						<button
+							className='btn btn-xs sm:btn-sm md:btn-md mt-3'
+							onClick={handleAvatarChange}>
 							Uppdatera Profilbild
 						</button>
-
 						<div className='w-full max-w-lg mt-4'>
 							<p className='mb-2'>
-								Ditt nuvarande användarnamn: {userInfo.username}
+								Ditt nuvarande användarnamn: {userInfo.user}
 							</p>
 							<label className='flex items-center gap-2'>
 								Användarnamn:
@@ -51,19 +64,18 @@ const Profile = () => {
 									type='text'
 									className='input input-bordered flex-grow w-full'
 									placeholder='Nytt användarnamn'
-									value={newUsername}
 									onChange={(e) => setNewUsername(e.target.value)}
 								/>
 							</label>
-							<div className='w-full max-w-sm place-self-endss'>
+
+							<div className='flex w-full justify-end'>
 								<button
-									className='btn btn-xs sm:btn-sm md:btn-md mt-3 '
+									className='btn btn-xs sm:btn-sm md:btn-md mt-3 ml-auto'
 									onClick={handleUsernameChange}>
 									Uppdatera Användarnamn
 								</button>
 							</div>
 						</div>
-
 						<div className='w-full max-w-lg mt-4'>
 							<p className='mb-2'>Din nuvarande email: {userInfo.email}</p>
 							<label className='flex items-center gap-2'>
@@ -72,15 +84,16 @@ const Profile = () => {
 									type='text'
 									className='input input-bordered flex-grow w-full'
 									placeholder='Ny email'
-									value={newEmail}
 									onChange={(e) => setNewEmail(e.target.value)}
 								/>
 							</label>
-							<button
-								className='btn btn-xs sm:btn-sm md:btn-md mt-3'
-								onClick={handleEmailChange}>
-								Uppdatera Email
-							</button>
+							<div className='flex w-full justify-end'>
+								<button
+									className='btn btn-xs sm:btn-sm md:btn-md mt-3 ml-auto'
+									onClick={handleEmailChange}>
+									Uppdatera Email
+								</button>
+							</div>
 						</div>
 					</>
 				)}
