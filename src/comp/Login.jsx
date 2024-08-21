@@ -20,11 +20,11 @@ const Login = () => {
 	}, [isLoggedIn, navigate]);
 
 	return (
-		<div className='flex justify-center items-center h-96 mt-24'>
+		<div className='flex justify-center items-center h-96 mt-24 px-4'>
 			<div
-				className='p-8 flex flex-col space-y-1 shadow-xl items-center border-4 w-1/3 bg-contain bg-image'
+				className='p-4 sm:p-8 flex flex-col space-y-2 sm:space-y-4 shadow-xl items-center border-4 w-full sm:w-2/3 md:w-1/2 lg:w-1/3 bg-contain bg-image  bg-gray-600 bg-opacity-30'
 				style={{ backgroundImage: "url('Sun_Flower_background.png')" }}>
-				<h1>Login</h1>
+				<h1 className='text-xl sm:text-2xl'>Login</h1>
 
 				{errorMessage && (
 					<div className='alert alert-error'>{errorMessage}</div>
@@ -46,7 +46,6 @@ const Login = () => {
 				</label>
 
 				<label className='flex items-center gap-2 w-full max-w-lg '>
-					{' '}
 					Password:
 					<input
 						type='password'

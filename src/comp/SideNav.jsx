@@ -23,7 +23,7 @@ const SideNav = () => {
 				ref={drawerToggleRef}
 			/>
 
-			<div className='drawer-content'>
+			<div className='drawer-content flex items-center'>
 				<label htmlFor='my-drawer-4' className='drawer-button btn'>
 					Menu
 				</label>
@@ -33,8 +33,8 @@ const SideNav = () => {
 				<label
 					htmlFor='my-drawer-4'
 					aria-label='close sidebar'
-					className='drawer-overlay '></label>
-				<ul className='menu p-4 w-60 min-h-full bg-base-200 text-base-content'>
+					className='drawer-overlay'></label>
+				<ul className='menu p-4 w-50 min-h-full sm:w-40 bg-base-200 text-base-content'>
 					<li>
 						<button
 							onClick={() => {

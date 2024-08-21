@@ -20,79 +20,74 @@ const Profile = () => {
 	};
 
 	return (
-		<div className='relative h-lvh'>
-			<div className='absolute top-16 left-1/2 transform -translate-x-1/2 p-4 flex flex-col space-y-2 shadow-xl items-center border-4 w-[60%] bg-contain bg-image h-auto'>
+		<div className='relative h-[90vh]'>
+			<div className='absolute top-10 left-1/2 transform -translate-x-1/2 p-4 flex flex-col space-y-2 shadow-xl items-center border-4 w-[90%] sm:w-[70%] md:w-[60%] lg:w-[50%] xl:w-[40%] bg-orange-300 bg-opacity-20 h-auto'>
 				{userInfo && (
 					<>
-						<h1 className='text-lg font-bold'>
-							{userInfo.user}, det här är din profilsida.
+						<h1 className='text-lg font-bold text-center pt-10'>
+							{userInfo.user}, this is your profile page.
 						</h1>
-						<p className='mt-0'>
-							Här kan du byta profilbild, användarnamn och email.
+						<p className='mt-0 text-center'>
+							Here you can change your profile picture, username, and email.
 						</p>
-						{!avatarUrl && (
-							<img
-								src={userInfo.avatar}
-								alt='User Avatar'
-								className='w-30 h-30 rounded-full object-cover mt-4 mb-4'
-							/>
-						)}
-						{avatarUrl && (
-							<img
-								src={avatarUrl}
-								alt='User Avatar'
-								className='w-30 h-30 rounded-full object-cover mt-4 mb-4'
-							/>
-						)}
+						<img
+							src={avatarUrl || userInfo.avatar}
+							alt='User Avatar'
+							className='w-30 h-30 rounded-full object-cover mt-4 mb-4'
+						/>
 						<button
 							className='btn btn-xs sm:btn-sm mt-3'
 							onClick={handlePreview}>
-							Välj ny Profilbild
+							Choose New Profile Picture
 						</button>
 						<button
 							className='btn btn-xs sm:btn-sm md:btn-md mt-3'
 							onClick={handleAvatarChange}>
-							Uppdatera Profilbild
+							Update Profile Picture
 						</button>
 						<div className='w-full max-w-lg mt-4'>
 							<p className='mb-2'>
-								Ditt nuvarande användarnamn: {userInfo.user}
+								Your current username: <b>{userInfo.user}</b>
 							</p>
-							<label className='flex items-center gap-2'>
-								Användarnamn:
-								<input
-									type='text'
-									className='input input-bordered flex-grow w-full'
-									placeholder='Nytt användarnamn'
-									onChange={(e) => setNewUsername(e.target.value)}
-								/>
-							</label>
+							<div className='w-full max-w-lg'>
+								{/* Username Section */}
+								<div className='mb-4'>
+									<p className='text-lg font-semibold mb-2'>Username:</p>
+									<input
+										type='text'
+										className='input input-bordered flex-grow w-full'
+										placeholder='New username'
+										onChange={(e) => setNewUsername(e.target.value)}
+									/>
+									<div className='flex w-full justify-end mt-2'>
+										<button
+											className='btn btn-xs sm:btn-sm md:btn-md'
+											onClick={handleUsernameChange}>
+											Update Username
+										</button>
+									</div>
+								</div>
 
-							<div className='flex w-full justify-end'>
-								<button
-									className='btn btn-xs sm:btn-sm md:btn-md mt-3 ml-auto'
-									onClick={handleUsernameChange}>
-									Uppdatera Användarnamn
-								</button>
-							</div>
-						</div>
-						<div className='w-full max-w-lg mt-4'>
-							<p className='mb-2'>Din nuvarande email: {userInfo.email}</p>
-							<label className='flex items-center gap-2'>
-								Email:
-								<input
-									type='text'
-									className='input input-bordered flex-grow w-full'
-									placeholder='Ny email'
-									onChange={(e) => setNewEmail(e.target.value)}
-								/>
-							</label>
-							<div className='flex w-full justify-end'>
-								<button
-									className='btn btn-xs sm:btn-sm md:btn-md mt-3 ml-auto'
-									onClick={handleEmailChange}>
-									Uppdatera Email
-								</button>
+								{/* Email Section */}
+								<div>
+									<p className='mb-2'>
+										Your current email: <b>{userInfo.email}</b>
+									</p>
+									<p className='text-lg font-semibold mb-2'>Email:</p>
+									<input
+										type='text'
+										className='input input-bordered flex-grow w-full'
+										placeholder='New email'
+										onChange={(e) => setNewEmail(e.target.value)}
+									/>
+									<div className='flex w-full justify-end mt-2'>
+										<button
+											className='btn btn-xs sm:btn-sm md:btn-md'
+											onClick={handleEmailChange}>
+											Update Email
+										</button>
+									</div>
+								</div>
 							</div>
 						</div>
 					</>

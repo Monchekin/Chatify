@@ -62,57 +62,55 @@ const Chat = () => {
 	};
 
 	return (
-		<div className='flex flex-col items-center overflow-y-auto h-dvh w-[95vw]'>
-			<div className='flex flex-col items-center pb-2 pt-6'>
+		<div className='flex flex-col items-center justify-center overflow-y-auto h-[80vh] w-full max-w-full '>
+			<div className='flex flex-col items-center pb-2 pt-6 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
 				{/* Visar användarens avatar och hälsning om användarinformation finns */}
 				{userInfo && (
 					<>
 						<img
 							src={userInfo.avatar || 'https://i.pravatar.cc/150?img='}
 							alt='User Avatar'
-							className='w-12 h-12 rounded-full object-cover'
+							className='w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover'
 						/>
-						<h1 className='text-lg font-bold'>Hej {userInfo.user}</h1>
+						<h1 className='text-lg sm:text-xl font-bold mt-2'>
+							Hello {userInfo.user}
+						</h1>
 					</>
 				)}
 			</div>
 
 			{/* Chattfönstret som visar alla meddelanden inkl fejk meddelanden */}
-			<div className='flex-1 w-full max-w-lg border-2 border-gray-300 overflow-y-auto max-h-96 p-4'>
+			<div
+				className='flex-1 w-full sm:w-3/4 md:w-2/4 lg:w-2/4 xl:w-2/5
+			border-2 border-gray-400 overflow-y-auto p-4  bg-orange-500 bg-opacity-20'>
 				{chatMsgHistory
-					// Markerar alla meddelanden som skickade av användaren
 					.map((chatMsg) => ({
 						...chatMsg,
 						isUser: true
 					}))
-
-					// Återger varje meddelande
 					.map((msg, index) => (
 						<div
 							key={index}
 							className={`flex ${
 								msg.isUser ? 'justify-end' : 'justify-start'
-							} mb-4`}>
+							} mb-4 pl-4`}>
 							{msg.isUser && (
-								// Visar användarens meddelanden
 								<div className='flex items-center space-x-2'>
 									<div className='flex items-center'>
 										<button
-											className='btn btn-ghost btn-outline btn-xs btn-error mr-2'
+											className='btn btn-ghost btn-outline btn-xs btn-error mr-2 border-2'
 											onClick={() => removeMessage(msg.id)}>
 											X
 										</button>
-
 										<div className='chat-bubble bg-blue-400 text-white p-2 rounded-lg max-w-lg'>
 											{msg.text}
 										</div>
 									</div>
-
 									{userInfo && (
 										<img
 											src={userInfo.avatar}
 											alt='Avatar'
-											className='w-12 h-12 rounded-full object-cover'
+											className='w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover'
 										/>
 									)}
 								</div>
@@ -122,12 +120,11 @@ const Chat = () => {
 
 				{showFakeMessages &&
 					chatMessages.map((cMsg, idx) => (
-						// Visar chatt-kompisens meddelanden
-						<div className='flex items-start space-x-3' key={idx}>
+						<div className='flex items-start space-x-3 pl-4' key={idx}>
 							<img
 								src={cMsg.avatar || 'https://i.pravatar.cc/50?img=10'}
 								alt='Avatar'
-								className='w-12 h-12 rounded-full object-cover mr-2 mt-5'
+								className='w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover mr-2 mt-5'
 							/>
 							<div className='flex flex-col items-start'>
 								<div className='text-sm font-bold'>Chat-kompis</div>
@@ -140,18 +137,20 @@ const Chat = () => {
 			</div>
 
 			{/* Input-fältet och knappen för att skicka meddelanden */}
-			<div className='w-full max-w-lg flex'>
+			<div
+				className='w-full sm:w-3/4 md:w-2/4 lg:w-2/4 xl:w-2/5
+			flex mt-4 sm:mt-2'>
 				<input
 					type='text'
 					value={message}
 					onChange={(e) => setMessage(e.target.value)}
 					onKeyDown={handleKeyDown}
 					placeholder='Type your message...'
-					className='inputarea p-2 w-full rounded-l border'
+					className='inputarea p-2 w-full rounded-l border text-sm sm:text-base it'
 				/>
 				<button
 					onClick={handleSendMessage}
-					className='p-2 bg-green-800 text-white rounded-r'>
+					className='p-2 bg-green-800 text-white rounded-r text-sm sm:text-base'>
 					Send
 				</button>
 			</div>
