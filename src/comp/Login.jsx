@@ -19,6 +19,13 @@ const Login = () => {
 		}
 	}, [isLoggedIn, navigate]);
 
+	const handleKeyDown = (e) => {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			login(username, password);
+		}
+	};
+
 	return (
 		<div className='flex justify-center items-center h-96 mt-24 px-4'>
 			<div
@@ -53,6 +60,7 @@ const Login = () => {
 						placeholder='Password'
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
+						onKeyDown={handleKeyDown}
 					/>
 				</label>
 				<div className='flex space-x-2 pt-3'>

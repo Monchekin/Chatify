@@ -40,14 +40,15 @@ const Profile = () => {
 			});
 		} else {
 			deleteUser(userInfo.id);
-			logout();
+			const userDeleted = true;
+			logout(userDeleted);
 			navigate('/');
 		}
 	};
 
 	return (
 		<div className='relative h-[90vh]'>
-			<div className='absolute top-10 left-1/2 transform -translate-x-1/2 p-4 flex flex-col space-y-2 shadow-xl items-center border-4 w-[90%] sm:w-[70%] md:w-[60%] lg:w-[50%] xl:w-[40%] bg-orange-300 bg-opacity-20 h-auto'>
+			<div className='absolute top-10 left-1/2 transform -translate-x-1/2 p-4 flex flex-col space-y-2 shadow-xl items-center border-4 w-[90%] sm:w-[70%] md:w-[60%] lg:w-[50%] xl:w-[40%] bg-orange-300 bg-opacity-20 h-auto pb-5'>
 				{userInfo && (
 					<>
 						<h1 className='text-lg font-bold text-center pt-10'>
@@ -59,7 +60,7 @@ const Profile = () => {
 						<img
 							src={avatarUrl || userInfo.avatar}
 							alt='User Avatar'
-							className='w-30 h-30 rounded-full object-cover mt-4 mb-4'
+							className='w-30 h-30 rounded-full object-cover mt-2 mb-4'
 						/>
 						<button
 							className='btn btn-xs sm:btn-sm mt-3'
@@ -76,7 +77,6 @@ const Profile = () => {
 								Your current username: <b>{userInfo.user}</b>
 							</p>
 							<div className='w-full max-w-lg'>
-								{/* Username Section */}
 								<div className='mb-4'>
 									<p className='text-lg font-semibold mb-2'>Username:</p>
 									<input
@@ -117,13 +117,15 @@ const Profile = () => {
 									{/* Delete Username Section */}
 									<div className='flex flex-col w-full items-center mt-2'>
 										{warning && (
-											<div className='alert alert-warning'>{warning}</div>
+											<div className='alert alert-warning text-center mb-2 mt-2'>
+												{warning}
+											</div>
 										)}
 										<div>
 											<button
 												className='btn btn-xs sm:btn-sm md:btn-md bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded'
 												onClick={handleDelete}>
-												{warning ? 'Confirm Delete' : 'Delete User for ever'}
+												{warning ? 'Confirm Delete' : 'Delete user forever'}
 											</button>
 										</div>
 									</div>

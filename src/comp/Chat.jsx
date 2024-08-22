@@ -102,20 +102,22 @@ const Chat = () => {
 								<div className='flex items-center space-x-2'>
 									<div className='flex items-center'>
 										<button
-											className='btn btn-ghost btn-outline btn-xs btn-error mr-2 border-2'
+											className='btn btn-ghost btn-outline btn-xs btn-error mr-2 border-2 mt-5'
 											onClick={() => removeMessage(msg.id)}>
 											X
 										</button>
-
-										<div className='chat-bubble bg-blue-400 text-white p-2 rounded-lg max-w-lg'>
-											{msg.text}
+										<div className='flex flex-col items-start'>
+											<div className='text-sm font-bold'>{userInfo.user}</div>
+											<div className='chat-bubble bg-blue-400 text-white p-2 rounded-lg max-w-lg'>
+												{msg.text}
+											</div>
 										</div>
 									</div>
 									{userInfo && (
 										<img
 											src={userInfo.avatar}
 											alt='Avatar'
-											className='w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover'
+											className='w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover mt-4'
 										/>
 									)}
 								</div>

@@ -33,7 +33,25 @@ const ChatContextProvider = (props) => {
 			});
 	}, []);
 
-	// Funktion för att registrera en ny användare
+	const base64UrlDecode = (str) => {
+		str = str.replace(/-/g, '+').replace(/_/g, '/');
+		const padding = 4 - (str.length % 4);
+		if (padding !== 4) {
+			str += '='.repeat(padding);
+		}
+		const decodedStr = atob(str);
+		const decodedUriComponent = decodeURIComponent(
+			decodedStr
+				.split('')
+				.map(function (c) {
+					return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+				})
+				.join('')
+		);
+		return decodedUriComponent;
+	};
+
+	// Funktion för att registrera en ny användare ----------------------------------------------
 	const register = (username, password, email) => {
 		let errorMessage = '';
 
@@ -79,7 +97,7 @@ const ChatContextProvider = (props) => {
 				if (!data.error) {
 					setTimeout(() => {
 						navigate('/login?success=Registration successful!');
-					}, 3000);
+					}, 1000);
 				} else {
 					// Om registreringen misslyckas, visas ett felmeddelande
 					setSearchParams({
@@ -124,7 +142,7 @@ const ChatContextProvider = (props) => {
 				if (data && data.token) {
 					sessionStorage.setItem('jwt_token', data.token);
 					const decodedJwt = JSON.parse(
-						atob(data.token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
+						base64UrlDecode(data.token.split('.')[1])
 					);
 					setUserInfo(decodedJwt);
 					sessionStorage.setItem('jwt_decoded', JSON.stringify(decodedJwt));
@@ -237,14 +255,6 @@ const ChatContextProvider = (props) => {
 
 	// Funktion för att radera användare ----------------------------------------------
 	const deleteUser = (userId) => {
-		if (!warning) {
-			setSearchParams({
-				warning: 'Are you sure you want to delete this user?'
-			});
-		} else {
-			console.log('User deleted');
-		}
-
 		fetch(`https://chatify-api.up.railway.app/users/${userId}`, {
 			method: 'DELETE',
 			headers: {
@@ -265,12 +275,14 @@ const ChatContextProvider = (props) => {
 	};
 
 	// Funktion för att logga ut användaren
-	const logout = () => {
+	const logout = (userDeleted) => {
 		sessionStorage.removeItem('jwt_token');
 		sessionStorage.removeItem('is_logged_in');
 		setIsLoggedIn(false);
 		setUserInfo(null);
-		navigate('/login');
+		if (!userDeleted) {
+			navigate('/login');
+		}
 	};
 
 	return (

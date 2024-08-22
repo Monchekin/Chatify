@@ -84,6 +84,13 @@ const Register = () => {
 					onClick={() => register(username, password, email, avatarUrl)}>
 					Register
 				</button>
+
+				{/* Sentry button  */}
+				<button
+					className='btn btn-xs sm:btn-sm md:btn-md'
+					onClick={() => methodDoesNotExist()}>
+					Break the world
+				</button>
 			</div>
 		</div>
 	);
