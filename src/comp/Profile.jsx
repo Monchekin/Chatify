@@ -1,14 +1,28 @@
 import React, { useContext, useState } from 'react';
 import { ChatContext } from '../ContextProvider';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Profile = () => {
-	const { updateProfile, userInfo, handlePreview, avatarUrl } =
-		useContext(ChatContext);
+	const {
+		updateProfile,
+		userInfo,
+		handlePreview,
+		avatarUrl,
+		deleteUser,
+		logout
+	} = useContext(ChatContext);
+
+	const [searchParams, setSearchParams] = useSearchParams();
+	const navigate = useNavigate();
+
 	const [newUsername, setNewUsername] = useState(userInfo.user || '');
 	const [newEmail, setNewEmail] = useState(userInfo.email || '');
 
+	// const userId = userInfo?.userId;
+	const warning = searchParams.get('warning');
+
 	const handleUsernameChange = () => {
-		updateProfile({ username: newUsername });
+		updateProfile({ user: newUsername });
 	};
 
 	const handleEmailChange = () => {
@@ -17,6 +31,18 @@ const Profile = () => {
 
 	const handleAvatarChange = () => {
 		updateProfile({ avatar: avatarUrl });
+	};
+
+	const handleDelete = () => {
+		if (!warning) {
+			setSearchParams({
+				warning: 'Are you sure you want to delete this user?'
+			});
+		} else {
+			deleteUser(userInfo.id);
+			logout();
+			navigate('/');
+		}
 	};
 
 	return (
@@ -86,6 +112,20 @@ const Profile = () => {
 											onClick={handleEmailChange}>
 											Update Email
 										</button>
+									</div>
+
+									{/* Delete Username Section */}
+									<div className='flex flex-col w-full items-center mt-2'>
+										{warning && (
+											<div className='alert alert-warning'>{warning}</div>
+										)}
+										<div>
+											<button
+												className='btn btn-xs sm:btn-sm md:btn-md bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded'
+												onClick={handleDelete}>
+												{warning ? 'Confirm Delete' : 'Delete User for ever'}
+											</button>
+										</div>
 									</div>
 								</div>
 							</div>

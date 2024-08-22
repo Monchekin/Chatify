@@ -227,11 +227,41 @@ const ChatContextProvider = (props) => {
 			.then((data) => {
 				const updatedUser = { ...decodedUser, ...updatedData };
 				sessionStorage.setItem('jwt_decoded', JSON.stringify(updatedUser));
+				setUserInfo(updatedUser);
 				console.log('User updated:', data);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
 			});
+	};
+
+	// Funktion för att radera användare ----------------------------------------------
+	const deleteUser = (userId) => {
+		if (!warning) {
+			setSearchParams({
+				warning: 'Are you sure you want to delete this user?'
+			});
+		} else {
+			console.log('User deleted');
+		}
+
+		fetch(`https://chatify-api.up.railway.app/users/${userId}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token')
+			}
+		})
+			.then((response) => {
+				if (!response.ok) {
+					console.log(`Error! Status: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log('User deleted', data);
+				setSearchParams({});
+			})
+			.catch((error) => console.error('Error:', error));
 	};
 
 	// Funktion för att logga ut användaren
@@ -261,7 +291,8 @@ const ChatContextProvider = (props) => {
 				message,
 				updateProfile,
 				userInfo,
-				removeMessage
+				removeMessage,
+				deleteUser
 			}}>
 			{props.children}
 		</ChatContext.Provider>

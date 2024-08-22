@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const SideNav = () => {
 	const navigate = useNavigate();
-	const { logout, isLoggedIn } = useContext(ChatContext);
+	const { logout, userInfo } = useContext(ChatContext);
 
 	const drawerToggleRef = useRef(null);
 
@@ -12,6 +12,7 @@ const SideNav = () => {
 		if (drawerToggleRef.current) {
 			drawerToggleRef.current.checked = false;
 		}
+		console.log(userInfo);
 	};
 
 	return (

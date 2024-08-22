@@ -1,35 +1,35 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { ChatContext } from '../ContextProvider';
 
-// Huvudkomponenten för chatten
+// Main Chat component
 const Chat = () => {
-	// Tillstånd för att lagra meddelandet som skrivs in och alla chattmeddelanden
+	// State to store the input message and chat messages
 	const [message, setMessage] = useState('');
 	const [showFakeMessages, setShowFakeMessages] = useState(false);
 	const [chatMessages, setChatMessages] = useState([
 		{
-			text: 'Hej',
+			text: 'Hi',
 			avatar: 'https://i.pravatar.cc/50?img=10',
 			isUser: false
 		},
 		{
-			text: 'Hur är läget?',
+			text: 'How are you?',
 			avatar: 'https://i.pravatar.cc/50?img=10',
 			isUser: false
 		},
 		{
-			text: 'Vad gör du?',
+			text: 'What are you doing?',
 			avatar: 'https://i.pravatar.cc/50?img=10',
 			isUser: false
 		},
 		{
-			text: 'Vad ska du göra idag?',
+			text: 'What are you doing today?',
 			avatar: 'https://i.pravatar.cc/50?img=10',
 			isUser: false
 		}
 	]);
 
-	// Hämtar funktioner och data från ChatContext
+	// Retrieves functions and data from ChatContext
 	const {
 		sendMessage,
 		chatMsgHistory,
@@ -38,19 +38,23 @@ const Chat = () => {
 		getChatHistory
 	} = useContext(ChatContext);
 
-	// Hämta chathistorik när Chat-komponenten laddas
+	// Fetch chat history when Chat component mounts
 	useEffect(() => {
 		if (userInfo) {
 			getChatHistory();
 		}
 	}, [userInfo, getChatHistory]);
 
-	// Funktion för att hantera när användaren skickar ett meddelande
+	// Function to handle sending a message
 	const handleSendMessage = () => {
 		if (message.trim()) {
 			sendMessage(message);
 			setMessage('');
-			setShowFakeMessages(true);
+			setShowFakeMessages(false); // Ensure fake messages are not shown initially
+			// Set a timer to show fake messages after 5 seconds
+			setTimeout(() => {
+				setShowFakeMessages(true);
+			}, 3000);
 		}
 	};
 
@@ -64,7 +68,7 @@ const Chat = () => {
 	return (
 		<div className='flex flex-col items-center justify-center overflow-y-auto h-[80vh] w-full max-w-full '>
 			<div className='flex flex-col items-center pb-2 pt-6 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
-				{/* Visar användarens avatar och hälsning om användarinformation finns */}
+				{/* Display user's avatar and greeting if user info is available */}
 				{userInfo && (
 					<>
 						<img
@@ -79,10 +83,10 @@ const Chat = () => {
 				)}
 			</div>
 
-			{/* Chattfönstret som visar alla meddelanden inkl fejk meddelanden */}
+			{/* Chat window displaying all messages including fake messages */}
 			<div
 				className='flex-1 w-full sm:w-3/4 md:w-2/4 lg:w-2/4 xl:w-2/5
-			border-2 border-gray-400 overflow-y-auto p-4  bg-orange-500 bg-opacity-20'>
+        border-2 border-gray-400 overflow-y-auto p-4 bg-orange-500 bg-opacity-20'>
 				{chatMsgHistory
 					.map((chatMsg) => ({
 						...chatMsg,
@@ -102,6 +106,7 @@ const Chat = () => {
 											onClick={() => removeMessage(msg.id)}>
 											X
 										</button>
+
 										<div className='chat-bubble bg-blue-400 text-white p-2 rounded-lg max-w-lg'>
 											{msg.text}
 										</div>
@@ -127,7 +132,7 @@ const Chat = () => {
 								className='w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover mr-2 mt-5'
 							/>
 							<div className='flex flex-col items-start'>
-								<div className='text-sm font-bold'>Chat-kompis</div>
+								<div className='text-sm font-bold'>Chat-Buddy</div>
 								<div className='chat-bubble bg-gray-50-400 white p-2 rounded-lg max-w-lg'>
 									{cMsg.text}
 								</div>
@@ -136,17 +141,17 @@ const Chat = () => {
 					))}
 			</div>
 
-			{/* Input-fältet och knappen för att skicka meddelanden */}
+			{/* Input field and button to send messages */}
 			<div
 				className='w-full sm:w-3/4 md:w-2/4 lg:w-2/4 xl:w-2/5
-			flex mt-4 sm:mt-2'>
+        flex mt-4 sm:mt-2'>
 				<input
 					type='text'
 					value={message}
 					onChange={(e) => setMessage(e.target.value)}
 					onKeyDown={handleKeyDown}
 					placeholder='Type your message...'
-					className='inputarea p-2 w-full rounded-l border text-sm sm:text-base it'
+					className='inputarea p-2 w-full rounded-l border text-sm sm:text-base'
 				/>
 				<button
 					onClick={handleSendMessage}
