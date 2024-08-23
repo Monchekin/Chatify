@@ -16,6 +16,7 @@ const ChatContextProvider = (props) => {
 	const [userInfo, setUserInfo] = useState(
 		JSON.parse(sessionStorage.getItem('jwt_decoded')) || null
 	);
+	const [users, setUsers] = useState([]);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
 
@@ -177,6 +178,60 @@ const ChatContextProvider = (props) => {
 			.catch((error) => console.log(error));
 	};
 
+	// Funktion för att hämta alla Användare ----------------------------------------------
+	const getAllUsers = () => {
+		fetch('https://chatify-api.up.railway.app/users', {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${sessionStorage.getItem('jwt_token')}`
+			}
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				setUsers(data);
+			})
+			.catch((error) => {
+				console.error('Error fetching users:', error);
+			});
+	};
+
+	useEffect(() => {
+		if (isLoggedIn) {
+			getAllUsers();
+		}
+	}, [isLoggedIn]);
+
+	const handleInviteUser = (userId) => {
+		fetch(`https://chatify-api.up.railway.app/invite/${userId}`, {
+			method: 'POST',
+			headers: {
+				Authorization: 'Bearer ' + sessionStorage.getItem('jwt_token'),
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({})
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (!data.conversationId) {
+					setSearchParams({
+						error: 'You cannot invite any user at this time'
+					});
+					setTimeout(() => {
+						setSearchParams({});
+					}, 4000);
+				} else {
+					console.log(
+						'User invited, conversation created:',
+						data.conversationId
+					);
+				}
+			})
+			.catch((error) => {
+				console.error('Error inviting user:', error);
+				setSearchParams({ error: 'You cannot invite any user at this time' });
+			});
+	};
+
 	// Funktion för att skicka ett meddelande
 	const sendMessage = (text) => {
 		fetch('https://chatify-api.up.railway.app/messages', {
@@ -304,7 +359,9 @@ const ChatContextProvider = (props) => {
 				updateProfile,
 				userInfo,
 				removeMessage,
-				deleteUser
+				deleteUser,
+				handleInviteUser,
+				users
 			}}>
 			{props.children}
 		</ChatContext.Provider>
