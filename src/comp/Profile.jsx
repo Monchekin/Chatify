@@ -12,27 +12,29 @@ const Profile = () => {
 		logout
 	} = useContext(ChatContext);
 
-	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
-
+	const [searchParams, setSearchParams] = useSearchParams();
 	const [newUsername, setNewUsername] = useState(userInfo.user || '');
 	const [newEmail, setNewEmail] = useState(userInfo.email || '');
 
-	// const userId = userInfo?.userId;
 	const warning = searchParams.get('warning');
 
+	// Funktion för att uppdatera användarnamn
 	const handleUsernameChange = () => {
 		updateProfile({ user: newUsername });
 	};
 
+	// Funktion för att uppdatera e-post
 	const handleEmailChange = () => {
 		updateProfile({ email: newEmail });
 	};
 
+	// Funktion för att uppdatera profilbild
 	const handleAvatarChange = () => {
 		updateProfile({ avatar: avatarUrl });
 	};
 
+	// Funktion för att hantera radering av användare, inklusive visning av varning och omdirigering efter radering
 	const handleDelete = () => {
 		if (!warning) {
 			setSearchParams({
@@ -57,6 +59,7 @@ const Profile = () => {
 						<p className='mt-0 text-center'>
 							Here you can change your profile picture, username, and email.
 						</p>
+						{/* Avatar Section */}
 						<img
 							src={avatarUrl || userInfo.avatar}
 							alt='User Avatar'
@@ -73,6 +76,7 @@ const Profile = () => {
 							Update Profile Picture
 						</button>
 						<div className='w-full max-w-lg mt-4'>
+							{/* username Section */}
 							<p className='mb-2'>
 								Your current username: <b>{userInfo.user}</b>
 							</p>

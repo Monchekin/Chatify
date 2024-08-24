@@ -3,22 +3,27 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChatContext } from '../ContextProvider';
 
 const Login = () => {
+	// Deklarerar state
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 
 	const { login, isLoggedIn } = useContext(ChatContext);
 	const [searchParams] = useSearchParams();
+
+	// Hämtar eventuella fel- eller framgångsmeddelanden
 	const errorMessage = searchParams.get('error');
 	const successMessage = searchParams.get('success');
 
 	const navigate = useNavigate();
 
+	// Om användaren är inloggad, navigera till chatt-sidan
 	useEffect(() => {
 		if (isLoggedIn) {
 			navigate('/chat');
 		}
 	}, [isLoggedIn, navigate]);
 
+	// Hanterar Enter-knapptryck för inloggning
 	const handleKeyDown = (e) => {
 		if (e.key === 'Enter') {
 			e.preventDefault();
@@ -29,7 +34,7 @@ const Login = () => {
 	return (
 		<div className='flex justify-center items-center h-96 mt-24 px-4'>
 			<div
-				className='p-4 sm:p-8 flex flex-col space-y-2 sm:space-y-4 shadow-xl items-center border-4 w-full sm:w-2/3 md:w-1/2 lg:w-1/3 bg-contain bg-image  bg-gray-600 bg-opacity-30'
+				className='p-4 sm:p-8 flex flex-col space-y-2 sm:space-y-4 shadow-xl items-center border-4 w-full sm:w-2/3 md:w-1/2 lg:w-1/3 bg-contain bg-image bg-gray-600 bg-opacity-30'
 				style={{ backgroundImage: "url('Sun_Flower_background.png')" }}>
 				<h1 className='text-xl sm:text-2xl'>Login</h1>
 
@@ -63,6 +68,7 @@ const Login = () => {
 						onKeyDown={handleKeyDown}
 					/>
 				</label>
+
 				<div className='flex space-x-2 pt-3'>
 					<button
 						disabled={!username || !password}

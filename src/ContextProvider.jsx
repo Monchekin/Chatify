@@ -5,7 +5,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 export const ChatContext = createContext();
 
 const ChatContextProvider = (props) => {
-	// Tillstånd för att lagra olika data som används i chatten och användarhantering
 	const [avatarUrl, setAvatarUrl] = useState('');
 	const [csrfToken, setCsrfToken] = useState('');
 	const [isLoggedIn, setIsLoggedIn] = useState(
@@ -52,7 +51,7 @@ const ChatContextProvider = (props) => {
 		return decodedUriComponent;
 	};
 
-	// Funktion för att registrera en ny användare ----------------------------------------------
+	// Funktion för att registrera en ny användare
 	const register = (username, password, email) => {
 		let errorMessage = '';
 
@@ -121,7 +120,7 @@ const ChatContextProvider = (props) => {
 		);
 	};
 
-	// Funktion för att logga in en användare ----------------------------------------------
+	// Funktion för att logga in en användare
 	const login = (username, password) => {
 		fetch('https://chatify-api.up.railway.app/auth/token', {
 			method: 'POST',
@@ -164,7 +163,7 @@ const ChatContextProvider = (props) => {
 			});
 	};
 
-	// Funktion för att hämta chatthistorik ----------------------------------------------
+	// Funktion för att hämta chatthistorik
 	const getChatHistory = () => {
 		fetch('https://chatify-api.up.railway.app/messages', {
 			headers: {
@@ -178,7 +177,7 @@ const ChatContextProvider = (props) => {
 			.catch((error) => console.log(error));
 	};
 
-	// Funktion för att hämta alla Användare ----------------------------------------------
+	// Funktion för att hämta alla Användare
 	const getAllUsers = () => {
 		fetch('https://chatify-api.up.railway.app/users', {
 			method: 'GET',
@@ -201,6 +200,7 @@ const ChatContextProvider = (props) => {
 		}
 	}, [isLoggedIn]);
 
+	// Funktion för att hantera Användare
 	const handleInviteUser = (userId) => {
 		fetch(`https://chatify-api.up.railway.app/invite/${userId}`, {
 			method: 'POST',
@@ -268,7 +268,7 @@ const ChatContextProvider = (props) => {
 			.catch((error) => console.log('Could not delete message', error));
 	};
 
-	// Funktion för att uppdatera användarprofilen ----------------------------------------------
+	// Funktion för att uppdatera användarprofilen
 	const updateProfile = (updatedData) => {
 		const decoded = sessionStorage.getItem('jwt_decoded');
 		let decodedUser = null;
@@ -308,7 +308,7 @@ const ChatContextProvider = (props) => {
 			});
 	};
 
-	// Funktion för att radera användare ----------------------------------------------
+	// Funktion för att radera användare
 	const deleteUser = (userId) => {
 		fetch(`https://chatify-api.up.railway.app/users/${userId}`, {
 			method: 'DELETE',

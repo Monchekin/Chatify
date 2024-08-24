@@ -3,38 +3,6 @@ import { ChatContext } from '../ContextProvider';
 import { useSearchParams } from 'react-router-dom';
 
 const Chat = () => {
-	const [message, setMessage] = useState('');
-	const [searchQuery, setSearchQuery] = useState('');
-	const [searchParams, setSearchParams] = useSearchParams();
-	const [showFakeMessages, setShowFakeMessages] = useState(false);
-	const [visibleMessages, setVisibleMessages] = useState([]);
-	const [messageIndex, setMessageIndex] = useState(0);
-
-	const errorMessage = searchParams.get('error');
-	const [chatMessages, setChatMessages] = useState([
-		{
-			text: 'Hi',
-			avatar: 'https://i.pravatar.cc/50?img=10',
-			isUser: false
-		},
-		{
-			text: 'How are you?',
-			avatar: 'https://i.pravatar.cc/50?img=10',
-			isUser: false
-		},
-		{
-			text: 'What are you doing?',
-			avatar: 'https://i.pravatar.cc/50?img=10',
-			isUser: false
-		},
-		{
-			text: 'What are you doing today?',
-			avatar: 'https://i.pravatar.cc/50?img=10',
-			isUser: false
-		}
-	]);
-
-	// Retrieves functions and data from ChatContext
 	const {
 		sendMessage,
 		chatMsgHistory,
@@ -45,6 +13,38 @@ const Chat = () => {
 		users
 	} = useContext(ChatContext);
 
+	const [message, setMessage] = useState('');
+	const [searchQuery, setSearchQuery] = useState('');
+	const [searchParams, setSearchParams] = useSearchParams();
+	const [showFakeMessages, setShowFakeMessages] = useState(false);
+	const [visibleMessages, setVisibleMessages] = useState([]);
+	const [messageIndex, setMessageIndex] = useState(0);
+
+	const errorMessage = searchParams.get('error');
+	const [chatMessages, setChatMessages] = useState([
+		{
+			text: 'Hej',
+			avatar: 'https://i.pravatar.cc/50?img=10',
+			isUser: false
+		},
+		{
+			text: 'Hur är läget?',
+			avatar: 'https://i.pravatar.cc/50?img=10',
+			isUser: false
+		},
+		{
+			text: 'Vad händer idag?',
+			avatar: 'https://i.pravatar.cc/50?img=10',
+			isUser: false
+		},
+		{
+			text: 'Hallå!!',
+			avatar: 'https://i.pravatar.cc/50?img=10',
+			isUser: false
+		}
+	]);
+
+	// Hanterar visning av fejk-meddelanden i chatten
 	useEffect(() => {
 		if (messageIndex < chatMessages.length && showFakeMessages) {
 			const timer = setTimeout(() => {
@@ -59,14 +59,14 @@ const Chat = () => {
 		}
 	}, [messageIndex, chatMessages, showFakeMessages]);
 
-	// Fetch chat history when Chat component mounts
+	// Hämtar chatthistorik när komponenten laddas
 	useEffect(() => {
 		if (userInfo) {
 			getChatHistory();
 		}
 	}, [userInfo, getChatHistory]);
 
-	// Function to handle sending a message
+	// Funktion för att hantera sändning av meddelanden
 	const handleSendMessage = () => {
 		if (message.trim()) {
 			sendMessage(message);
@@ -78,6 +78,7 @@ const Chat = () => {
 		}
 	};
 
+	// Hanterar "Enter"-knapptryck för att skicka meddelanden
 	const handleKeyDown = (e) => {
 		if (e.key === 'Enter') {
 			e.preventDefault();
@@ -85,7 +86,7 @@ const Chat = () => {
 		}
 	};
 
-	// Filter users based on the search query
+	// Filtrerar användare baserat på sökfrågan
 	const filteredUsers = (users || []).filter((user) =>
 		user.username.toLowerCase().includes(searchQuery.toLowerCase())
 	);
@@ -94,7 +95,7 @@ const Chat = () => {
 		<div className='flex flex-row overflow-y-auto h-[90vh] w-full max-w-full '>
 			<div className='flex flex-col items-center justify-center overflow-y-auto h-[80vh] w-full max-w-full '>
 				<div className='flex flex-col items-center pb-2 pt-6 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
-					{/* Display user's avatar and greeting if user info is available */}
+					{/* Visar användarens avatar och en hälsning om användarinfo finns */}
 					{userInfo && (
 						<>
 							<img
@@ -109,7 +110,7 @@ const Chat = () => {
 					)}
 				</div>
 
-				{/* Chat window displaying all messages including fake messages */}
+				{/* Chattfönster som visar alla meddelanden, inklusive fejk-meddelanden */}
 				<div
 					className='flex-1 w-full sm:w-3/4 md:w-2/4 lg:w-2/4 xl:w-2/5
         border-2 border-gray-400 overflow-y-auto p-4 bg-orange-500 bg-opacity-20'>
@@ -167,7 +168,6 @@ const Chat = () => {
 					))}
 				</div>
 
-				{/* Input field and button to send messages */}
 				<div
 					className='w-full sm:w-3/4 md:w-2/4 lg:w-2/4 xl:w-2/5
         flex mt-4 sm:mt-2'>
@@ -186,10 +186,10 @@ const Chat = () => {
 					</button>
 				</div>
 			</div>
-			{/* Sidebar for displaying all users */}
+			{/* Sidopanel för att visa alla användare */}
 			<div className='lg:flex flex-col w-1/3 border-l border-gray-500 p-4'>
 				<h1 className='text-lg font-bold mb-4 '></h1>
-				{/* Search input */}
+				{/* Sökfält för att filtrera användare */}
 				<div className='sticky top-0 z-10'>
 					<input
 						type='text'
@@ -200,6 +200,7 @@ const Chat = () => {
 					/>
 					<h1 className='text-lg font-bold mb-4 '>Users</h1>
 
+					{/* Visar felmeddelanden */}
 					{errorMessage && (
 						<div className='alert alert-error text-center mb-5'>
 							{errorMessage}
@@ -211,7 +212,7 @@ const Chat = () => {
 						{filteredUsers.length > 0 ? (
 							filteredUsers.map((user, index) => (
 								<li
-									key={user.id || index} // Use user.id if available, otherwise fallback to index
+									key={user.id || index}
 									className='flex items-center justify-between p-2 border rounded-lg bg-gray-300'>
 									<div className='flex items-center'>
 										<img

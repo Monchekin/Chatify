@@ -12,7 +12,6 @@ const SideNav = () => {
 		if (drawerToggleRef.current) {
 			drawerToggleRef.current.checked = false;
 		}
-		console.log(userInfo);
 	};
 
 	return (
@@ -30,12 +29,14 @@ const SideNav = () => {
 				</label>
 			</div>
 
+			{/* Sidmenyns innehåll */}
 			<div className='drawer-side z-20'>
 				<label
 					htmlFor='my-drawer-4'
 					aria-label='close sidebar'
 					className='drawer-overlay'></label>
 				<ul className='menu p-4 w-50 min-h-full sm:w-40 bg-base-200 text-base-content'>
+					{/* Till Profilen  */}
 					<li>
 						<button
 							onClick={() => {
@@ -45,7 +46,7 @@ const SideNav = () => {
 							Profile
 						</button>
 					</li>
-
+					{/* Till chatten  */}
 					<li>
 						<button
 							onClick={() => {
@@ -55,7 +56,7 @@ const SideNav = () => {
 							Chat
 						</button>
 					</li>
-
+					{/* Log ut knappen */}
 					<li>
 						<button
 							onClick={() => {

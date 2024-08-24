@@ -35,6 +35,7 @@ const Register = () => {
 						</a>
 					</span>
 				</div>
+				{/* Inmatningsfält för användarnamn */}
 				<label className='flex items-center gap-2 w-full max-w-lg pt-3'>
 					Username:
 					<input
@@ -45,7 +46,7 @@ const Register = () => {
 						onChange={(e) => setUsername(e.target.value)}
 					/>
 				</label>
-
+				{/* Inmatningsfält för lösenord */}
 				<label className='flex items-center gap-2 w-full max-w-lg'>
 					Password:
 					<input
@@ -56,7 +57,7 @@ const Register = () => {
 						onChange={(e) => setPassword(e.target.value)}
 					/>
 				</label>
-
+				{/* Inmatningsfält för email */}
 				<label className='flex items-center gap-2 w-full max-w-lg'>
 					Email:
 					<input
@@ -78,14 +79,14 @@ const Register = () => {
 				<button className='btn btn-xs sm:btn-sm mt-3' onClick={handlePreview}>
 					Choose your profile picture
 				</button>
-
+				{/* Regristrings knapp  */}
 				<button
 					className='btn btn-xs sm:btn-sm md:btn-md'
 					onClick={() => register(username, password, email, avatarUrl)}>
 					Register
 				</button>
 
-				{/* Sentry button  */}
+				{/* Sentry knapp  */}
 				<button
 					className='btn btn-xs sm:btn-sm md:btn-md'
 					onClick={() => methodDoesNotExist()}>
